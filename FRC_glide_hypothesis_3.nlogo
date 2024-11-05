@@ -14,7 +14,7 @@ to setup
   setup-rails
   numerate
   setup-chemotaxis
-  ask patch -45 21 [ ask patches in-radius 10 [ set pcolor red ] ]
+  ask patch -50 -9 [ ask patches in-radius 10 [ set pcolor red ] ]
   set Surf_0 count patches with [pcolor = red]
   set Bound_0 perim red
   set Xc0 0
@@ -113,7 +113,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + Jcf * (EJ - EJ0) - 10 * (Erail - Erail0)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target
@@ -160,7 +160,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + Jcf * (EJ - EJ0) - 10 * (Erail - Erail0)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target2
@@ -203,7 +203,7 @@ end
 to measure-energy
   ask patches with [pcolor = red]
   [
-    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf
+    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf + ( count neighbors4 with [pcolor = blue ] ) * Jcm
   ]
   set ENERGY sum [energy_i] of patches
 end
@@ -291,10 +291,10 @@ NIL
 1
 
 INPUTBOX
-57
-236
-163
-296
+55
+391
+145
+451
 Temp
 7.0
 1
@@ -302,10 +302,10 @@ Temp
 Number
 
 INPUTBOX
-56
-319
-165
-379
+55
+306
+144
+366
 PERIMETER
 100.0
 1
@@ -324,10 +324,10 @@ Bound
 11
 
 INPUTBOX
-185
-320
-294
-380
+186
+307
+295
+367
 AREA
 300.0
 1
@@ -378,12 +378,12 @@ Ydir
 Number
 
 INPUTBOX
-187
-236
-295
+188
+223
 296
+283
 Jcf
--50.0
+0.0
 1
 0
 Number
@@ -409,6 +409,28 @@ MOVE_index
 0
 1
 11
+
+INPUTBOX
+54
+223
+142
+283
+Jcm
+1.0
+1
+0
+Number
+
+INPUTBOX
+185
+392
+295
+452
+LAMBDA_Hapt
+10.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -806,7 +828,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.1.1
 @#$#@#$#@
 setup-random repeat 20 [ go ]
 @#$#@#$#@

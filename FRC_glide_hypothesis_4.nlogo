@@ -1,4 +1,6 @@
-globals [ EJ EJ0 Bound Bound_0 Ebound Ebound0 Surf Surf_0 Esurf Esurf0 Xc Yc Xc0 Yc0 Edir Edir0 DH PROB ENERGY kdir GN MOVE_index Erail0 Erail]
+globals [ EJ EJ0 Bound Bound_0 Ebound Ebound0 Surf Surf_0 Esurf Esurf0 Xc Yc Xc0 Yc0 Edir Edir0 DH PROB ENERGY kdir GN MOVE_index Erail0 Erail
+
+          cm_distance] ; Число смен положения центра масс
 
 patches-own
 [ NR
@@ -14,12 +16,13 @@ to setup
   setup-rails
   numerate
   setup-chemotaxis
-  ask patch -45 21 [ ask patches in-radius 10 [ set pcolor red ] ]
+  ask patch -50 -9 [ ask patches in-radius 10 [ set pcolor red ] ]
   set Surf_0 count patches with [pcolor = red]
   set Bound_0 perim red
   set Xc0 0
   set Yc0 0
   set GN 0
+  set cm_distance 0
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   measure-energy
   set EJ0 ENERGY
@@ -88,7 +91,8 @@ to setup-chemotaxis
 end
 
 to go
-
+if (count patches with [pcolor = red] with [count neighbors with [pxcor = 60] > 0] > 5) [stop]
+;;;
   check-neighbourhood
   ifelse (GN > 5) [set kdir 0 ] [set kdir 10 ]
 
@@ -113,7 +117,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + Jcf * (EJ - EJ0) - 10 * (Erail - Erail0)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target
@@ -160,7 +164,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + Jcf * (EJ - EJ0) - 10 * (Erail - Erail0)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target2
@@ -180,6 +184,7 @@ to go
   set Surf_0 count patches with [pcolor = red]
 
   mark-centre
+  set cm_distance ifelse-value ((Xc0 != Xc) or (Yc0 != Yc)) [cm_distance + sqrt( (Xc0 - Xc) ^ 2 + (Yc0 - Yc) ^ 2 ) ] [ cm_distance ]
   set Xc0 Xc
   set Yc0 Yc
 
@@ -203,7 +208,7 @@ end
 to measure-energy
   ask patches with [pcolor = red]
   [
-    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf
+    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf + ( count neighbors4 with [pcolor = blue ] ) * Jcm
   ]
   set ENERGY sum [energy_i] of patches
 end
@@ -292,9 +297,9 @@ NIL
 
 INPUTBOX
 57
-236
+390
 163
-296
+450
 Temp
 7.0
 1
@@ -303,9 +308,9 @@ Number
 
 INPUTBOX
 56
-319
+303
 165
-379
+363
 PERIMETER
 100.0
 1
@@ -317,7 +322,7 @@ MONITOR
 45
 1622
 90
-Периметр клетки
+Cell perimeter
 Bound
 17
 1
@@ -325,9 +330,9 @@ Bound
 
 INPUTBOX
 185
-320
+304
 294
-380
+364
 AREA
 300.0
 1
@@ -339,7 +344,7 @@ MONITOR
 116
 1623
 161
-Площадь клетки
+Cell area
 Surf
 17
 1
@@ -356,10 +361,10 @@ Direction:
 1
 
 INPUTBOX
-54
-137
-141
-197
+58
+136
+164
+196
 Xdir
 -45.0
 1
@@ -379,11 +384,11 @@ Number
 
 INPUTBOX
 187
-236
+220
 295
-296
+280
 Jcf
--50.0
+0.0
 1
 0
 Number
@@ -391,7 +396,7 @@ Number
 MONITOR
 1514
 206
-1624
+1599
 251
 NIL
 Xc
@@ -406,6 +411,39 @@ MONITOR
 308
 NIL
 MOVE_index
+0
+1
+11
+
+INPUTBOX
+57
+221
+166
+281
+Jcm
+1.0
+1
+0
+Number
+
+INPUTBOX
+184
+390
+294
+450
+LAMBDA_Hapt
+10.0
+1
+0
+Number
+
+MONITOR
+1516
+324
+1597
+369
+Distance
+cm_distance
 0
 1
 11
@@ -806,7 +844,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.1.1
 @#$#@#$#@
 setup-random repeat 20 [ go ]
 @#$#@#$#@

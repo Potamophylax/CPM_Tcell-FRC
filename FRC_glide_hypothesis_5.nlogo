@@ -8,6 +8,7 @@ globals [ EJ EJ0 Bound Bound_0 Ebound Ebound0 Surf Surf_0 Esurf Esurf0 Xc Yc Xc0
   Conc0        ; Концентрация хемокина на сайте, откуда копирование
   alpha_list   ; Список всех значений углов движения клетки
   theta_list   ; Список углов направления клетки за последние тау шагов Монте-Карло
+  cm_distance  ; Число смен положения центра масс
 ]
 patches-own
 [ NR
@@ -28,6 +29,7 @@ to setup
   set Bound_0 perim red
   set Xc0 0
   set Yc0 0
+  set cm_distance 0
   set THETA0 random 361
   ask patches with [ abs (pxcor) = max-pxcor ] [ set pcolor blue]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,6 +82,8 @@ to setup-grad
 end
 
 to go
+  if (count patches with [pcolor = red] with [count neighbors with [pxcor = 60] > 0] > 4) [stop]
+ ;;;
   calculate-angle
   repeat N_iter
   [
@@ -177,6 +181,7 @@ to go
     set Surf_0 count patches with [pcolor = red]
 
     mark-centre
+    set cm_distance ifelse-value ((Xc0 != Xc) or (Yc0 != Yc)) [cm_distance + sqrt( (Xc0 - Xc) ^ 2 + (Yc0 - Yc) ^ 2 ) ] [ cm_distance ]
     set Xc0 Xc
     set Yc0 Yc
     ask patch Xc Yc [set TRACE 1]
@@ -234,11 +239,11 @@ end
 GRAPHICS-WINDOW
 338
 14
-1072
-389
+1629
+670
 -1
 -1
-6.0
+10.61
 1
 10
 1
@@ -298,7 +303,7 @@ INPUTBOX
 68
 118
 Temp
-1.0
+7.0
 1
 0
 Number
@@ -315,10 +320,10 @@ PERIMETER
 Number
 
 MONITOR
-1101
-16
-1215
-61
+1651
+33
+1765
+78
 Периметр клетки
 Bound
 17
@@ -337,10 +342,10 @@ AREA
 Number
 
 MONITOR
-1103
-87
-1216
-132
+1653
+104
+1766
+149
 Площадь клетки
 Surf
 17
@@ -348,10 +353,10 @@ Surf
 11
 
 INPUTBOX
-243
-263
-320
-323
+114
+414
+191
+474
 Jcf
 0.0
 1
@@ -359,10 +364,10 @@ Jcf
 Number
 
 MONITOR
-1107
-177
-1185
-222
+1657
+194
+1735
+239
 NIL
 Xc
 0
@@ -403,10 +408,10 @@ phi
 Number
 
 INPUTBOX
-190
-330
-300
-390
+113
+513
+195
+573
 delta_theta
 60.0
 1
@@ -447,10 +452,10 @@ LAMBDA_AR
 Number
 
 INPUTBOX
-143
-263
-220
-323
+14
+414
+91
+474
 Jcm
 10.0
 1
@@ -469,10 +474,10 @@ LAMBDA_GRAD
 Number
 
 INPUTBOX
-242
-167
-323
-227
+14
+512
+95
+572
 tau
 10.0
 1
@@ -480,10 +485,10 @@ tau
 Number
 
 TEXTBOX
-244
-136
-325
-164
+16
+481
+97
+509
 Characteristic time
 11
 0.0
@@ -507,12 +512,12 @@ NIL
 1
 
 MONITOR
-1124
-333
-1188
-378
-NIL
-THETA00
+1658
+266
+1735
+311
+Distance
+cm_distance
 0
 1
 11

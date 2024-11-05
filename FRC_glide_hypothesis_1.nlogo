@@ -12,9 +12,9 @@ patches-own
 to setup
   clear-all
   ask patches [ set pcolor blue set pnum 0]
-  setup-rails3
+  setup-rails
   setup-grad
-  ask patch Xdir Ydir [ ask patches in-radius 10 [ set pcolor red ] ] ; -48 -11   -32 18
+  ask patch -50 -10 [ ask patches in-radius 10 [ set pcolor red ] ]
   set Surf_0 count patches with [pcolor = red]
   set Bound_0 perim red
   set Xc0 0
@@ -101,7 +101,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + Jcf * (EJ - EJ0) - 10 * (Conc - Conc0)      ;+ kdir * (Edir0 - Edir)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + (EJ - EJ0) - LAMBDA_Grad * (Conc - Conc0)      ;+ kdir * (Edir0 - Edir)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target
@@ -145,7 +145,7 @@ to go
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + Jcf * (EJ - EJ0) - 10 * (Conc - Conc0) ; + kdir * (Edir0 - Edir)
+  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + (EJ - EJ0) - LAMBDA_Grad * (Conc - Conc0) ; + kdir * (Edir0 - Edir)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target2
@@ -185,7 +185,7 @@ end
 to measure-energy
   ask patches with [pcolor = red]
   [
-    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf
+    set energy_i ( count neighbors4 with [pcolor = grey ] ) * Jcf + ( count neighbors4 with [pcolor = blue ] ) * Jcm
   ]
   set ENERGY sum [energy_i] of patches
 end
@@ -261,9 +261,9 @@ NIL
 
 INPUTBOX
 19
-233
-125
-293
+385
+114
+445
 Temp
 7.0
 1
@@ -272,9 +272,9 @@ Number
 
 INPUTBOX
 18
-316
-127
-376
+301
+114
+361
 PERIMETER
 100.0
 1
@@ -294,9 +294,9 @@ Bound
 
 INPUTBOX
 147
-317
+302
 256
-377
+362
 AREA
 300.0
 1
@@ -330,18 +330,18 @@ INPUTBOX
 259
 193
 Ydir
-10.0
+-50.0
 1
 0
 Number
 
 INPUTBOX
 149
-233
+218
 257
-293
+278
 Jcf
--1.0
+0.0
 1
 0
 Number
@@ -363,7 +363,29 @@ INPUTBOX
 112
 195
 Xdir
--24.0
+-45.0
+1
+0
+Number
+
+INPUTBOX
+19
+217
+114
+277
+Jcm
+1.0
+1
+0
+Number
+
+INPUTBOX
+145
+385
+255
+445
+LAMBDA_Grad
+10.0
 1
 0
 Number
@@ -764,7 +786,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.1.1
 @#$#@#$#@
 setup-random repeat 20 [ go ]
 @#$#@#$#@
