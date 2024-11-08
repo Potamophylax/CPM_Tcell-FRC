@@ -117,7 +117,7 @@ if (count patches with [pcolor = red] with [count neighbors with [pxcor = 60] > 
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
+  set DH LAMBDA_Per * (Ebound - Ebound0) + LAMBDA_Ar * (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target
@@ -164,7 +164,7 @@ if (count patches with [pcolor = red] with [count neighbors with [pxcor = 60] > 
   set Edir0 (Xdir * Xc0 + Ydir * Yc0)
   set Edir (Xdir * Xc + Ydir * Yc)
 
-  set DH (Ebound - Ebound0) + (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
+  set DH LAMBDA_Per * (Ebound - Ebound0) + LAMBDA_Ar * (Esurf - Esurf0) + kdir * (Edir0 - Edir) + (EJ - EJ0) - LAMBDA_Hapt * (Erail - Erail0)
   ifelse DH < 0 [ set PROB 1 ] [ ifelse DH = 0 [ set PROB 0.5 ] [set PROB exp(- DH / Temp)] ]
 
   ask target2
@@ -296,10 +296,10 @@ NIL
 1
 
 INPUTBOX
-57
-390
-163
-450
+58
+466
+164
+526
 Temp
 7.0
 1
@@ -427,10 +427,10 @@ Jcm
 Number
 
 INPUTBOX
-184
-390
-294
-450
+186
+466
+296
+526
 LAMBDA_Hapt
 10.0
 1
@@ -447,6 +447,28 @@ cm_distance
 0
 1
 11
+
+INPUTBOX
+57
+386
+165
+446
+LAMBDA_Per
+1.0
+1
+0
+Number
+
+INPUTBOX
+186
+387
+294
+447
+LAMBDA_Ar
+1.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
